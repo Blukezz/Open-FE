@@ -221,7 +221,7 @@ do -- Converted Scripts --
 		Name = "Neptunion V",
 		Description = "The very popular sword script.",
 		Callback = function()
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/dev/Converted-Scripts/NeptunionV.lua"))()
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/Converted-Scripts/NeptunionV.lua"))()
 		end
 	})
 end

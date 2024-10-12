@@ -26,14 +26,14 @@ local MusicFile = "NeptunionV.mp3"
 local MusicPath = MusicFolder.."/"..MusicFile
 local getsynasset = getcustomasset or function() warn("no getcustomasset/getsynasset") end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/dev/LoadLibrary.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/LoadLibrary.lua"))()
 
 if not isfolder(MusicFolder) then
 	makefolder(MusicFolder)
 end
 
 if not isfile(MusicPath) then
-	writefile(MusicPath, game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/dev/Songs/NeptunianV.mp3"))
+	writefile(MusicPath, game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/Songs/NeptunianV.mp3"))
 end
 
 
