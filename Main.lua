@@ -219,7 +219,7 @@ do -- Converted Scripts --
 
 	ScriptsSection:NewButton({
 		Name = "Neptunion V",
-		Description = "Sword goes brrrrrrrrrrrrrrr",
+		Description = "The very popular sword script.",
 		Callback = function()
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/dev/Converted-Scripts/NeptunionV.lua"))()
 		end

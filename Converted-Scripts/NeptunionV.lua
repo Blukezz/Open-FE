@@ -7514,6 +7514,12 @@ for i, v in pairs(Hats) do
   end)
 end
 
+-- remove guis and sound on cancel
+API:OnCancelScript(function()
+  kan:Destroy()
+  basgui:Destroy()
+end)
+
 
 
 
