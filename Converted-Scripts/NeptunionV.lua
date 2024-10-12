@@ -7515,7 +7515,7 @@ for i, v in pairs(Hats) do
 end
 
 -- remove guis and sound on cancel
-API:OnCancelScript(function()
+API:GetCancelEvent().Event:Connect(function()
   kan:Destroy()
   basgui:Destroy()
 end)
