@@ -6034,17 +6034,12 @@ h.MaxHealth = 100
       print(block.Value)
     end
     if blocked == false then
-      HitHealth = h.Health
-h.MaxHealth = 100
-      h.Health = h.Health - Damage
-      if HitHealth ~= h.Health and HitHealth ~= 0 and 0 >= h.Health and h.Parent.Name ~= "Hologram" then
-        print("gained kill")
-dmg(h.Parent)
-      end
-      ShowDamage(Part.CFrame * CFrame.new(0, 0, Part.Size.Z / 2).p + Vector3.new(0, 1.5, 0), -Damage, 1.5, Part.BrickColor.Color)
+      API:CallFling(h.Parent)
+      --ShowDamage(Part.CFrame * CFrame.new(0, 0, Part.Size.Z / 2).p + Vector3.new(0, 1.5, 0), -Damage, 1.5, Part.BrickColor.Color)
     else
+      API:CallFling(h.Parent)
       h.Health = h.Health - Damage / 2
-      ShowDamage(Part.CFrame * CFrame.new(0, 0, Part.Size.Z / 2).p + Vector3.new(0, 1.5, 0), -Damage, 1.5, Part.BrickColor.Color)
+      --ShowDamage(Part.CFrame * CFrame.new(0, 0, Part.Size.Z / 2).p + Vector3.new(0, 1.5, 0), -Damage, 1.5, Part.BrickColor.Color)
     end
     if Type == "Knockdown" then
       local hum = hit.Parent.Humanoid
