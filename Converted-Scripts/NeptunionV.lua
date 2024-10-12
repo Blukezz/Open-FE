@@ -17,20 +17,25 @@ skipto/]]
 warn("Have fun using this!")
 ---- DO NOT CHANGE ANYTHING BELOW IF YOU'RE NOT AN EDITOR
 
+local CoreGui = game:GetService("CoreGui")
+local Global = getgenv()
+local API = getgenv().KadeAPI
+local Rig = API:GetCharacter()
 local MusicFolder = "OfeSongs"
 local MusicFile = "NeptunionV.mp3"
 local MusicPath = MusicFolder.."/"..MusicFile
 local getsynasset = getcustomasset or function() warn("no getcustomasset/getsynasset") end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/LoadLibrary.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/dev/LoadLibrary.lua"))()
 
 if not isfolder(MusicFolder) then
 	makefolder(MusicFolder)
 end
 
 if not isfile(MusicPath) then
-	writefile(MusicPath, game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/Songs/NeptunianV.mp3"))
+	writefile(MusicPath, game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/dev/Songs/NeptunianV.mp3"))
 end
+
 
 --Converted with ttyyuu12345's model to script plugin v4
 function sandbox(var,func)
@@ -5134,7 +5139,7 @@ SpecialMesh476.Parent = Part475
 SpecialMesh476.Scale = Vector3.new(0.349999994, 1.04999995, 0.5)
 SpecialMesh476.MeshType = Enum.MeshType.Brick
 for i,v in pairs(mas:GetChildren()) do
-	v.Parent = game:GetService("Players").LocalPlayer.Character
+	v.Parent = Rig
 	pcall(function() v:MakeJoints() end)
 end
 mas:Destroy()
@@ -5153,7 +5158,8 @@ end
 
 
 plr = game:GetService("Players").LocalPlayer
-char = plr.Character
+char = Rig
+Character = Rig
 hum = char.Humanoid
 local cam = game.Workspace.CurrentCamera
 t = char.Torso
@@ -5181,7 +5187,7 @@ local muter = false
 local ORGID = 1873219898
 local ORVOL = 1.15
 local ORPIT = 1.01
-local kan = Instance.new("Sound",plr.PlayerGui)
+local kan = Instance.new("Sound", CoreGui)
 kan.Volume = 1.15
 kan.TimePosition = 0
 kan.PlaybackSpeed = 1.01
@@ -5193,7 +5199,7 @@ kan:Play()
 
 --------------------------- GUI STUFF
 local basgui = it("GuiMain")
-basgui.Parent = plr.PlayerGui
+basgui.Parent = CoreGui
 basgui.Name = "VISgui"
 local fullscreenz = it("Frame")
 fullscreenz.Parent = basgui
@@ -5572,7 +5578,7 @@ local MainWeldS = CreateWeld(Part475,rarmor,Part475,0,0,0,math.rad(90),math.rad(
 local A0 = Instance.new("Attachment",rarmor)
 A0.Position = Vector3.new(-2.5,0.25,0)
 local A1 = Instance.new("Attachment",rarmor)
-A1.Position = Vector3.new(-7.5,0.4,0)
+A1.Position = Vector3.new(-5.7,0.4,0)
 tl1 = Instance.new('Trail',rarmor)
 tl1.Attachment0 = A0
 tl1.Attachment1 = A1
@@ -5652,8 +5658,8 @@ function CreateWeld(Parent, Part0, Part1, C0, C1)
 end
 
 Player=game:GetService("Players").LocalPlayer
-Character=Player.Character 
-PlayerGui=Player.PlayerGui 
+Character=Rig
+PlayerGui=CoreGui
 Backpack=Player.Backpack 
 Torso=Character.Torso 
 Head=Character.Head 
@@ -5667,7 +5673,7 @@ LS=Torso["Left Shoulder"]
 LH=Torso["Left Hip"] 
 RS=Torso["Right Shoulder"] 
 RH=Torso["Right Hip"] 
-Face = Head.face
+--Face = Head.face
 Neck=Torso.Neck
 it=Instance.new
 attacktype=1
@@ -6019,7 +6025,7 @@ h.MaxHealth = 100
     if HitSound ~= nil and HitPitch ~= nil then
       CFuncs.Sound.Create(HitSound, hit, 1, HitPitch)
     end
-    local Damage = math.random(minim, maxim)
+    local Damage = 0
     local blocked = false
     local block = hit.Parent:findFirstChild("Block")
     if block ~= nil and block.className == "IntValue" and block.Value > 0 then
@@ -7485,6 +7491,32 @@ kan.TimePosition = message:sub(8)
 end
 end)
 
+
+
+-- hat aligning
+local DemonicSwordOffset = CFrame.new(-2.6, 0, 0) * CFrame.Angles(math.rad(2),0,math.rad(-45))
+local Hats = {
+  {"MeshPartAccessory", weaponweld.Parent, DemonicSwordOffset}
+}
+
+for i, v in pairs(Hats) do
+  game:FindFirstChildOfClass("RunService").PostSimulation:Connect(function()
+    local Hat = Rig:FindFirstChild(v[1])
+
+    if Hat and Hat.Handle then
+      local Weld = Hat.Handle:FindFirstChildOfClass("Weld")
+      if Weld then
+        Weld:Destroy()
+      end
+
+      Hat.Handle.CFrame = v[2].CFrame * v[3]
+    end
+  end)
+end
+
+
+
+
 idleanim=.4
 while true do
 swait()
@@ -7495,9 +7527,9 @@ kan.Volume = 0
 end
 kan.PlaybackSpeed = ORPIT
 kan.Pitch = ORPIT
-kan.SoundId = "rbxassetid://" ..ORGID
+kan.SoundId = getsynasset(MusicPath)
 kan.Looped = true
-kan.Parent = plr.PlayerGui
+kan.Parent = CoreGui
 kan:Resume()
 techc.Rotation = techc.Rotation + 0.1
 imgl2.Rotation = imgl2.Rotation - kan.PlaybackLoudness/50
