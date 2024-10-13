@@ -152,15 +152,17 @@ do -- Reanimation Settings --
 		end,
 	})
 
-	ReanimationOptions:NewToggle({
-		Name = "Use Custom Hat Preset",
-		Description = "Whether to use you custom hat preset.",
-		CurrentState = Configs["Reanimation"].UseCustomHats,
-		Callback = function(Value)
-			Configs["Reanimation"].UseCustomHats = Value
-			SyncConfiguration("Reanimation")
-		end,
-	})
+	if Hats then
+		ReanimationOptions:NewToggle({
+			Name = "Use Custom Hat Preset",
+			Description = "Whether to use you custom hat preset.",
+			CurrentState = Configs["Reanimation"].UseCustomHats,
+			Callback = function(Value)
+				Configs["Reanimation"].UseCustomHats = Value
+				SyncConfiguration("Reanimation")
+			end,
+		})
+	end
 
 	ReanimationOptions:NewToggle({
 		Name = "Return On Death",
