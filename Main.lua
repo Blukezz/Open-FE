@@ -19,14 +19,16 @@ local Configs = {
 		DisableCharacterScripts = true,
 		AccessoryFallbackDefaults = true,
 		OverlayFakeCharacter = false,
-		HatPreset = 1,
+		HatPreset = "Default",
+		UseCustomHats = false
 	},
 	["General"] = {
 		Music = true,
-		HidePart1 = true
+		HidePart1 = true,
 	},
 }
 
+-- Functions and Init --
 local function WaitUntilIsFile(File: string, Destination: boolean)
 	repeat
 		wait(0.1)
@@ -34,7 +36,7 @@ local function WaitUntilIsFile(File: string, Destination: boolean)
 end
 
 local function GetConfigData(Type: string)
-	return { File = ConfigFolder.."/"..Type, Config = Configs[Type], Type = Type }
+	return { File = ConfigFolder .. "/" .. Type, Config = Configs[Type], Type = Type }
 end
 
 local function CreateConfigurationFile(Data: table)
@@ -95,6 +97,13 @@ local function Reanimate()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/MessageToSelf-DontDeleteMe/refs/heads/main/Module.luau"))()
 end
 
+if Hats then -- Check for custom hat presets
+	Configs["Reanimation"].UseCustomHats = true
+	Global.CustomHats = Hats
+else
+	Configs["Reanimation"].UseCustomHats = false
+end
+
 if isfile(ConfigFolder) then
 	LoadAllConfigurationFiles()
 else
@@ -108,154 +117,175 @@ local Window = rolibwaita:NewWindow({
 	Name = "Open FE",
 	Keybind = "P",
 	UseCoreGui = true,
-	PrintCredits = true
+	PrintCredits = true,
 })
 
 do -- Reanimation Settings --
 	local ReanimationTab = Window:NewTab({
 		Name = "Reanimation",
-		Icon = "rbxassetid://101572999709694"
+		Icon = "rbxassetid://101572999709694",
 	})
 
 	local ReanimateSection = ReanimationTab:NewSection({
 		Name = "Start Reanimation",
-		Description = "Krypton Reanimation by xyzkade."
+		Description = "Krypton Reanimation by xyzkade.",
 	})
 
 	ReanimateSection:NewButton({
 		Name = "Reanimate",
-		Callback = Reanimate
+		Callback = Reanimate,
 	})
 
 	local ReanimationOptions = ReanimationTab:NewSection({
 		Name = "Krypton Reanimation Configuration",
-		Description = "If you don't know what a setting means, don't change it."
+		Description = "If you don't know what a setting means, don't change it.",
+	})
+
+	ReanimationOptions:NewDropdown({
+		Name = "Hat Preset",
+		Description = "Join Discord for more information on this.",
+		Choices = {"Default", "Free"},
+		CurrentState = "Default",
+		Callback = function(Value)
+			Configs["Reanimation"].HatPreset = Value
+			SyncConfiguration("Reanimation")
+		end,
+	})
+
+	ReanimationOptions:NewToggle({
+		Name = "Use Custom Hat Preset",
+		Description = "Whether to use you custom hat preset.",
+		CurrentState = Configs["Reanimation"].UseCustomHats,
+		Callback = function(Value)
+			Configs["Reanimation"].UseCustomHats = Value
+			SyncConfiguration("Reanimation")
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "Return On Death",
 		Description = "Returns to previous location upon stopping the reanimate.",
-		CurrentState = Global.Configuration.ReturnOnDeath,
+		CurrentState = Configs["Reanimation"].ReturnOnDeath,
 		Callback = function(Value)
 			Configs["Reanimation"].ReturnOnDeath = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "Fling",
 		Description = "Enables all fling.",
-		CurrentState = Global.Configuration.Flinging,
+		CurrentState = Configs["Reanimation"].Flinging,
 		Callback = function(Value)
 			Configs["Reanimation"].Flinging = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "Click Fling",
 		Description = "When holding M1 before a respawn, your real rig will fling where your mouse is.",
-		CurrentState = Global.Configuration.PresetFling,
+		CurrentState = Configs["Reanimation"].PresetFling,
 		Callback = function(Value)
 			Configs["Reanimation"].PresetFling = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "Default Animations",
 		Description = "Default animations, not needed when using a scirpt.",
-		CurrentState = Global.Configuration.Animations,
+		CurrentState = Configs["Reanimation"].Animations,
 		Callback = function(Value)
 			Configs["Reanimation"].Animations = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewTextBox({
 		Name = "Wait Time",
 		Description = "Yeilds during each respawn to ensure stability.",
 		PlaceholderText = "Number of seconds..",
-		Text = Global.Configuration.WaitTime,
+		Text = Configs["Reanimation"].WaitTime,
 		Trigger = "FocusLost",
 		Callback = function(Value)
 			Configs["Reanimation"].WaitTime = tonumber(Value)
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewTextBox({
 		Name = "Teleport Offset Radius",
 		Description = "Range of where your real rig will be teleported to your fake rig.",
 		PlaceholderText = "Number of studs..",
-		Text = Global.Configuration.TeleportOffsetRadius,
+		Text = Configs["Reanimation"].TeleportOffsetRadius,
 		Trigger = "FocusLost",
 		Callback = function(Value)
 			Configs["Reanimation"].TeleportOffsetRadius = tonumber(Value)
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "No Collisions",
 		Description = "Noclip for the fake rig.",
-		CurrentState = Global.Configuration.NoCollisions,
+		CurrentState = Configs["Reanimation"].NoCollisions,
 		Callback = function(Value)
 			Configs["Reanimation"].NoCollisions = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "AntiVoiding",
 		Description = "Stops you from falling in the void.",
-		CurrentState = Global.Configuration.AntiVoiding,
+		CurrentState = Configs["Reanimation"].AntiVoiding,
 		Callback = function(Value)
 			Configs["Reanimation"].AntiVoiding = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "Disable Character Scripts",
 		Description = "Disables any local scripts from the server rig.",
-		CurrentState = Global.Configuration.DisableCharacterScripts,
+		CurrentState = Configs["Reanimation"].DisableCharacterScripts,
 		Callback = function(Value)
 			Configs["Reanimation"].DisableCharacterScripts = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "Accessory Fallback Defaults",
 		Description = "Creates client sidded accessories in case you dont have them.",
-		CurrentState = Global.Configuration.AccessoryFallbackDefaults,
+		CurrentState = Configs["Reanimation"].AccessoryFallbackDefaults,
 		Callback = function(Value)
 			Configs["Reanimation"].AccessoryFallbackDefaults = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 
 	ReanimationOptions:NewToggle({
 		Name = "Overlay Fake Character",
 		Description = "Be able to see your fake rig when respawning.",
-		CurrentState = Global.Configuration.OverlayFakeCharacter,
+		CurrentState = Configs["Reanimation"].OverlayFakeCharacter,
 		Callback = function(Value)
 			Configs["Reanimation"].OverlayFakeCharacter = Value
 			SyncConfiguration("Reanimation")
-		end
+		end,
 	})
 end
 
 do -- Converted Scripts --
 	local ScriptsTab = Window:NewTab({
 		Name = "Scripts",
-		Icon = "rbxassetid://93166595134738"
+		Icon = "rbxassetid://93166595134738",
 	})
 
 	local ScriptsSection = ScriptsTab:NewSection({
 		Name = "Converted Scripts",
-		Description = "Scripts made to work with a reanimate."
+		Description = "Scripts made to work with a reanimate.",
 	})
 
 	ScriptsSection:NewButton({
@@ -263,19 +293,19 @@ do -- Converted Scripts --
 		Description = "The very popular sword script.",
 		Callback = function()
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/Converted-Scripts/NeptunionV.lua"))()
-		end
+		end,
 	})
 end
 
 do -- General Settings --
 	local ScriptsTab = Window:NewTab({
 		Name = "Settings",
-		Icon = "rbxassetid://137847815815367"
+		Icon = "rbxassetid://137847815815367",
 	})
 
 	local ScriptsSection = ScriptsTab:NewSection({
 		Name = "General Settings",
-		Description = "Settings that are not reanimation settings. If you don't know what a setting means, don't change it."
+		Description = "Settings that are not reanimation settings. If you don't know what a setting means, don't change it.",
 	})
 
 	ScriptsSection:NewToggle({
@@ -285,7 +315,7 @@ do -- General Settings --
 		Callback = function(Value)
 			Configs["General"].Music = Value
 			SyncConfiguration("General")
-		end
+		end,
 	})
 
 	ScriptsSection:NewToggle({
@@ -295,6 +325,6 @@ do -- General Settings --
 		Callback = function(Value)
 			Configs["General"].HidePart1 = Value
 			SyncConfiguration("General")
-		end
+		end,
 	})
 end
