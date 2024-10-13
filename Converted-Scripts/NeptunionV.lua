@@ -19,7 +19,8 @@ warn("Have fun using this!")
 
 local CoreGui = game:GetService("CoreGui")
 local Global = getgenv()
-local API = getgenv().KadeAPI
+local API = Global.KadeAPI
+local OpenFE = Global.OpenFE
 local Rig = API:GetCharacter()
 local MusicFolder = "OfeSongs"
 local MusicFile = "NeptunionV.mp3"
@@ -6034,10 +6035,14 @@ h.MaxHealth = 100
       print(block.Value)
     end
     if blocked == false then
-      API:CallFling(h.Parent)
+      task.spawn(function()
+        API:CallFling(h.Parent)
+      end)
       --ShowDamage(Part.CFrame * CFrame.new(0, 0, Part.Size.Z / 2).p + Vector3.new(0, 1.5, 0), -Damage, 1.5, Part.BrickColor.Color)
     else
-      API:CallFling(h.Parent)
+      task.spawn(function()
+        API:CallFling(h.Parent)
+      end)
       h.Health = h.Health - Damage / 2
       --ShowDamage(Part.CFrame * CFrame.new(0, 0, Part.Size.Z / 2).p + Vector3.new(0, 1.5, 0), -Damage, 1.5, Part.BrickColor.Color)
     end
@@ -7515,7 +7520,21 @@ API:GetCancelEvent().Event:Connect(function()
   basgui:Destroy()
 end)
 
+-- music
+if OpenFE.Music then
+  muter = false
+else
+  muter = true
+end
 
+-- hide client sword
+if OpenFE.HidePart1 then
+  for i,v in pairs(Model0:GetChildren()) do
+		if v:IsA("BasePart") then
+			v.Transparency = 1
+		end
+	end
+end
 
 
 idleanim=.4

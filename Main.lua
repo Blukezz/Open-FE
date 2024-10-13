@@ -3,22 +3,28 @@ print("Open FE: A free and open source FE hub.")
 local rolibwaita = loadstring(game:HttpGet("https://codeberg.org/Blukez/rolibwaita/raw/branch/master/Source.lua"))()
 local HttpService = game:GetService("HttpService")
 local Global = getgenv()
-local ConfigFile = "OpenFE"
+local ConfigFolder = "OpenFE"
 
-local Config = {
-	ReturnOnDeath = true,
-	Flinging = false,
-	PresetFling = false,
-	Animations = true,
-	WaitTime = 0.3,
-	TeleportOffsetRadius = 20,
-	NoCollisions = true,
-	AntiVoiding = true,
-	SetSimulationRadius = true,
-	DisableCharacterScripts = true,
-	AccessoryFallbackDefaults = true,
-	OverlayFakeCharacter = true,
-	HatPreset = 1,
+local Configs = {
+	["Reanimation"] = {
+		ReturnOnDeath = true,
+		Flinging = false,
+		PresetFling = false,
+		Animations = true,
+		WaitTime = 0.3,
+		TeleportOffsetRadius = 20,
+		NoCollisions = true,
+		AntiVoiding = true,
+		SetSimulationRadius = true,
+		DisableCharacterScripts = true,
+		AccessoryFallbackDefaults = true,
+		OverlayFakeCharacter = false,
+		HatPreset = 1,
+	},
+	["General"] = {
+		Music = true,
+		HidePart1 = true
+	},
 }
 
 local function WaitUntilIsFile(File: string, Destination: boolean)
@@ -27,41 +33,76 @@ local function WaitUntilIsFile(File: string, Destination: boolean)
 	until isfile(File) == Destination
 end
 
-local function CreateConfigurationFile()
-	writefile(ConfigFile, HttpService:JSONEncode(Config))
-	WaitUntilIsFile(ConfigFile, true)
+local function GetConfigData(Type: string)
+	return { File = ConfigFolder.."/"..Type, Config = Configs[Type], Type = Type }
 end
 
-local function DeleteConfigurationFile()
-	delfile(ConfigFile)
-	WaitUntilIsFile(ConfigFile, false)
+local function CreateConfigurationFile(Data: table)
+	writefile(Data.File, HttpService:JSONEncode(Data.Config))
+	WaitUntilIsFile(Data.File, true)
 end
 
-local function LoadConfigurationFile()
-	Config = HttpService:JSONDecode(readfile(ConfigFile))
+local function DeleteConfigurationFile(Data: table)
+	delfile(Data.File)
+	WaitUntilIsFile(Data.File, false)
 end
 
-local function ConfigurationFileToGlobals()
-	Global.Configuration = HttpService:JSONDecode(readfile(ConfigFile))
+local function LoadConfigurationFile(Data: table)
+	Data.Config = HttpService:JSONDecode(readfile(Data.File))
 end
 
-local function SyncConfiguration()
-	DeleteConfigurationFile()
-	CreateConfigurationFile()
-	ConfigurationFileToGlobals()
+local function ConfigurationFileToGlobals(Data: table)
+	if Data.Type == "Reanimation" then
+		Global.Configuration = HttpService:JSONDecode(readfile(Data.File))
+	elseif Data.Type == "General" then
+		Global.OpenFE = HttpService:JSONDecode(readfile(Data.File))
+	end
+end
+
+local function SyncConfiguration(Type: string)
+	local Data = GetConfigData(Type)
+	DeleteConfigurationFile(Data)
+	CreateConfigurationFile(Data)
+	ConfigurationFileToGlobals(Data)
+end
+
+local function ForEveryConfigDo(Callback)
+	for i, v in pairs(Configs) do
+		local Data = GetConfigData(i)
+		Callback(Data)
+	end
+end
+
+local function AllConfigurationFilesToGlobals()
+	ForEveryConfigDo(function(Data)
+		ConfigurationFileToGlobals(Data)
+	end)
+end
+
+local function LoadAllConfigurationFiles()
+	ForEveryConfigDo(function(Data)
+		LoadConfigurationFile(Data)
+	end)
+end
+
+local function CreateAllConfigurationFiles()
+	ForEveryConfigDo(function(Data)
+		CreateConfigurationFile(Data)
+	end)
 end
 
 local function Reanimate()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/MessageToSelf-DontDeleteMe/refs/heads/main/Module.luau"))()
 end
 
-if isfile(ConfigFile) then
-	LoadConfigurationFile()
+if isfile(ConfigFolder) then
+	LoadAllConfigurationFiles()
 else
-	CreateConfigurationFile()
+	makefolder(ConfigFolder)
+	CreateAllConfigurationFiles()
 end
 
-ConfigurationFileToGlobals()
+AllConfigurationFilesToGlobals()
 
 local Window = rolibwaita:NewWindow({
 	Name = "Open FE",
@@ -73,7 +114,7 @@ local Window = rolibwaita:NewWindow({
 do -- Reanimation Settings --
 	local ReanimationTab = Window:NewTab({
 		Name = "Reanimation",
-		Icon = "rbxassetid://13300920666"
+		Icon = "rbxassetid://101572999709694"
 	})
 
 	local ReanimateSection = ReanimationTab:NewSection({
@@ -96,8 +137,8 @@ do -- Reanimation Settings --
 		Description = "Returns to previous location upon stopping the reanimate.",
 		CurrentState = Global.Configuration.ReturnOnDeath,
 		Callback = function(Value)
-			Config.ReturnOnDeath = Value
-			SyncConfiguration()
+			Configs["Reanimation"].ReturnOnDeath = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -106,8 +147,8 @@ do -- Reanimation Settings --
 		Description = "Enables all fling.",
 		CurrentState = Global.Configuration.Flinging,
 		Callback = function(Value)
-			Config.Flinging = Value
-			SyncConfiguration()
+			Configs["Reanimation"].Flinging = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -116,8 +157,8 @@ do -- Reanimation Settings --
 		Description = "When holding M1 before a respawn, your real rig will fling where your mouse is.",
 		CurrentState = Global.Configuration.PresetFling,
 		Callback = function(Value)
-			Config.PresetFling = Value
-			SyncConfiguration()
+			Configs["Reanimation"].PresetFling = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -126,8 +167,8 @@ do -- Reanimation Settings --
 		Description = "Default animations, not needed when using a scirpt.",
 		CurrentState = Global.Configuration.Animations,
 		Callback = function(Value)
-			Config.Animations = Value
-			SyncConfiguration()
+			Configs["Reanimation"].Animations = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -138,8 +179,8 @@ do -- Reanimation Settings --
 		Text = Global.Configuration.WaitTime,
 		Trigger = "FocusLost",
 		Callback = function(Value)
-			Config.WaitTime = tonumber(Value)
-			SyncConfiguration()
+			Configs["Reanimation"].WaitTime = tonumber(Value)
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -150,8 +191,8 @@ do -- Reanimation Settings --
 		Text = Global.Configuration.TeleportOffsetRadius,
 		Trigger = "FocusLost",
 		Callback = function(Value)
-			Config.TeleportOffsetRadius = tonumber(Value)
-			SyncConfiguration()
+			Configs["Reanimation"].TeleportOffsetRadius = tonumber(Value)
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -160,8 +201,8 @@ do -- Reanimation Settings --
 		Description = "Noclip for the fake rig.",
 		CurrentState = Global.Configuration.NoCollisions,
 		Callback = function(Value)
-			Config.NoCollisions = Value
-			SyncConfiguration()
+			Configs["Reanimation"].NoCollisions = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -170,8 +211,8 @@ do -- Reanimation Settings --
 		Description = "Stops you from falling in the void.",
 		CurrentState = Global.Configuration.AntiVoiding,
 		Callback = function(Value)
-			Config.AntiVoiding = Value
-			SyncConfiguration()
+			Configs["Reanimation"].AntiVoiding = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -180,8 +221,8 @@ do -- Reanimation Settings --
 		Description = "Disables any local scripts from the server rig.",
 		CurrentState = Global.Configuration.DisableCharacterScripts,
 		Callback = function(Value)
-			Config.DisableCharacterScripts = Value
-			SyncConfiguration()
+			Configs["Reanimation"].DisableCharacterScripts = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -190,8 +231,8 @@ do -- Reanimation Settings --
 		Description = "Creates client sidded accessories in case you dont have them.",
 		CurrentState = Global.Configuration.AccessoryFallbackDefaults,
 		Callback = function(Value)
-			Config.AccessoryFallbackDefaults = Value
-			SyncConfiguration()
+			Configs["Reanimation"].AccessoryFallbackDefaults = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 
@@ -200,8 +241,8 @@ do -- Reanimation Settings --
 		Description = "Be able to see your fake rig when respawning.",
 		CurrentState = Global.Configuration.OverlayFakeCharacter,
 		Callback = function(Value)
-			Config.OverlayFakeCharacter = Value
-			SyncConfiguration()
+			Configs["Reanimation"].OverlayFakeCharacter = Value
+			SyncConfiguration("Reanimation")
 		end
 	})
 end
@@ -209,7 +250,7 @@ end
 do -- Converted Scripts --
 	local ScriptsTab = Window:NewTab({
 		Name = "Scripts",
-		Icon = "rbxassetid://13300920666"
+		Icon = "rbxassetid://93166595134738"
 	})
 
 	local ScriptsSection = ScriptsTab:NewSection({
@@ -222,6 +263,38 @@ do -- Converted Scripts --
 		Description = "The very popular sword script.",
 		Callback = function()
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/Converted-Scripts/NeptunionV.lua"))()
+		end
+	})
+end
+
+do -- General Settings --
+	local ScriptsTab = Window:NewTab({
+		Name = "Settings",
+		Icon = "rbxassetid://137847815815367"
+	})
+
+	local ScriptsSection = ScriptsTab:NewSection({
+		Name = "General Settings",
+		Description = "Settings that are not reanimation settings. If you don't know what a setting means, don't change it."
+	})
+
+	ScriptsSection:NewToggle({
+		Name = "Music",
+		Description = "Wether music should be played in a script.",
+		CurrentState = Configs["General"].Music,
+		Callback = function(Value)
+			Configs["General"].Music = Value
+			SyncConfiguration("General")
+		end
+	})
+
+	ScriptsSection:NewToggle({
+		Name = "Hide Part1",
+		Description = "Hides the part that the hat is algined to.",
+		CurrentState = Configs["General"].HidePart1,
+		Callback = function(Value)
+			Configs["General"].HidePart1 = Value
+			SyncConfiguration("General")
 		end
 	})
 end
