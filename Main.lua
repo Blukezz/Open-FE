@@ -297,6 +297,14 @@ do -- Converted Scripts --
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/Converted-Scripts/NeptunionV.lua"))()
 		end,
 	})
+
+	ScriptsSection:NewButton({
+		Name = "Kyu's Ender",
+		Description = `Kyu's version of the script "Ender"`,
+		Callback = function()
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/Open-FE/refs/heads/main/Converted-Scripts/KyusEnder.lua"))()
+		end,
+	})
 end
 
 do -- General Settings --
