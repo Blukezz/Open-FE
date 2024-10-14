@@ -104,7 +104,7 @@ else
 	Configs["Reanimation"].UseCustomHats = false
 end
 
-if isfile(ConfigFolder) then
+if isfolder(ConfigFolder) then
 	LoadAllConfigurationFiles()
 else
 	makefolder(ConfigFolder)
